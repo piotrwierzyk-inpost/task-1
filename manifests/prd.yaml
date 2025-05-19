@@ -1,0 +1,15 @@
+replicaCount: 5
+
+profile: prd
+
+ingress:
+  enabled: true
+  host: api.example.com
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
