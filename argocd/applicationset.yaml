@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: spring-boot-api-set
+  namespace: argocd
+spec:
+  generators:
+  - list:
+      elements:
+      - cluster: dev-global-cluster-0
+        url: https://127.0.0.1:54701
+        valuesPath: manifests/dev.yaml
+      - cluster: prd-global-cluster-5
+        url: https://127.0.0.1:5598
+        valuesPath: manifests/prd.yaml
+  template:
+    metadata:
+      name: spring-boot-{{ cluster }}
+    spec:
+      project: piotrwierzyk-inpost
+      destination:
+        server: "{{ url }}"
+        namespace: application
+      source:
+        repoURL: "https://github.com/piotrwierzyk-inpost/task-1.git"
+        targetRevision: HEAD
+        chart: spring-boot-api
+        helm:
+          valueFiles:
+          - https://github.com/piotrwierzyk-inpost/task-1.git/{{ valuesPath }}
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
