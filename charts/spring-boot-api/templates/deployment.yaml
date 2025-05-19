@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "spring-boot-api.fullname" . }}
+  labels:
+    {{- include "spring-boot-api.labels" . | nindent 4 }}
+  annotations: 
+  {{- include "spring-boot-api.annotations" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      {{- include "spring-boot-api.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "spring-boot-api.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          args:
+            - "--spring.profiles.active={{ .Values.profile }}"
+          ports:
+            - name: api
+              containerPort: 8080
+            - name: logs
+              containerPort: 8081
+            - name: soap
+              containerPort: 8082
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+          envFrom:
+            - secretRef:
+                name: {{ include "spring-boot-api.fullname" . }}-secret
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          terminationGracePeriodSeconds: 5
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh","-c","wget -qO- http://localhost:8080/service/shutdown || true"]
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: app-config
+              mountPath: /app/config.json
+              subPath: config.json
+      volumes:
+        - name: app-config
+          configMap:
+            name: {{ include "spring-boot-api.fullname" . }}-config

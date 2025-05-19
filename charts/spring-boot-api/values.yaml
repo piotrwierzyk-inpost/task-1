@@ -1,0 +1,18 @@
+replicaCount: 3         
+profile: dev
+
+image:
+  repository: busybox
+  tag: stable
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+ingress:
+  enabled: true
+  host: dev.example.local
