@@ -8,10 +8,8 @@ spec:
   - list:
       elements:
       - cluster: dev-global-cluster-0
-        url: https://127.0.0.1:54701
         valuesPath: manifests/dev.yaml
       - cluster: prd-global-cluster-5
-        url: https://127.0.0.1:5598
         valuesPath: manifests/prd.yaml
   template:
     metadata:
@@ -19,7 +17,7 @@ spec:
     spec:
       project: piotrwierzyk-inpost
       destination:
-        server: "{{ url }}"
+        server: "kind-{{ cluster }}"
         namespace: application
       source:
         repoURL: "https://github.com/piotrwierzyk-inpost/task-1.git"

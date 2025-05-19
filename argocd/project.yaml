@@ -1,0 +1,12 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: piotrwierzyk-inpost
+  namespace: argocd
+spec:
+  description: "Project for InPost DevOps Engineer assessment"
+  destinations:
+    - namespace: '*'
+      server: '*'
+  sourceRepos:
+    - https://github.com/piotrwierzyk-inpost/task-1.git
