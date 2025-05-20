@@ -1,0 +1,12 @@
+Spring-Boot API – Helm Chart & Argo CD ApplicationSet
+
+Solution for Part I of the DevOps Engineer recruitment assignment at InPost
+
+Repository Structure:
+
+chart/ - Helm chart  for Spring-Boot API
+
+manifests/ - manifest with overrides values
+
+argocd/ - Argo CD ApplicationSet
+
